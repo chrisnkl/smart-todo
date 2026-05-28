@@ -16,5 +16,5 @@ SmartTodo is an intelligent to-do list application for Android that leverages Go
 - **Architecture:** MVVM (Model-View-ViewModel)
 ---
 
-**Note:** This is a university project and is currently in development.
+**Note:** This is a university project
 
