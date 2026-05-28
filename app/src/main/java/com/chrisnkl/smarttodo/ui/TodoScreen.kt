@@ -1,4 +1,4 @@
-package com.chrisnkl.smarttodo.ui.theme
+package com.chrisnkl.smarttodo.ui
 
 import android.content.Context
 import android.content.Intent
@@ -30,9 +30,11 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.chrisnkl.smarttodo.model.TaskActionType
 import com.chrisnkl.smarttodo.model.TaskItem
 import com.chrisnkl.smarttodo.viewmodel.TodoViewModel
+import com.chrisnkl.smarttodo.viewmodel.TodoViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,7 +96,7 @@ private fun TaskText(task: TaskItem) {
 
     val context = LocalContext.current
 
-    Text (
+    Text(
         text = buildAnnotatedString {
             append("• ")
 
@@ -114,7 +116,8 @@ private fun TaskText(task: TaskItem) {
                 val clickedValue = cleanActionValue(action.type, action.value)
 
                 withLink(
-                    LinkAnnotation.Clickable(tag = "${action.type.name}|$clickedValue",
+                    androidx.compose.ui.text.LinkAnnotation.Clickable(
+                        tag = "${action.type.name}|$clickedValue",
                         linkInteractionListener = {
                             openTaskAction(
                                 context = context,
@@ -166,7 +169,8 @@ private fun openTaskAction(
         TaskActionType.URL -> {
             val normalized = if (
                 value.startsWith("http://") || value.startsWith("https://")
-            ) value else "http://${value}"
+            ) value else "https://${value}"
+
             Intent(Intent.ACTION_VIEW, normalized.toUri())
         }
 
@@ -185,14 +189,12 @@ private fun openTaskAction(
             Toast.LENGTH_SHORT
         ).show()
     }
-
-
 }
 
 private fun cleanActionValue(type: TaskActionType, value: String): String {
     return when (type) {
 
-        TaskActionType.PHONE -> value.filter {it.isDigit() || it == '+'}
+        TaskActionType.PHONE -> value.filter { it.isDigit() || it == '+' }
         TaskActionType.EMAIL -> value.trim().trim(',', '.', ';', ':', ')', '(')
         TaskActionType.URL -> value.trim().trim(',', '.', ';', ':', ')', '(')
         TaskActionType.ADDRESS -> value.trim()
